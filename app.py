@@ -3,10 +3,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import openai
+import os
 
 # Ottieni la chiave API dalle variabili di ambiente
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
 
 # Crea l'app FastAPI
 app = FastAPI()
@@ -25,6 +25,11 @@ class RecommendationRequest(BaseModel):
     categoria: str
     descrizione: str
 
+# Endpoint di base per testare se il server è attivo
+@app.get("/")
+def root():
+    return {"message": "Benvenuto nell'API per le raccomandazioni dinamiche!"}
+
 # Endpoint per generare raccomandazioni
 @app.post("/raccomanda")
 def raccomanda(request: RecommendationRequest):
@@ -32,20 +37,14 @@ def raccomanda(request: RecommendationRequest):
     Riceve la categoria e la descrizione, genera raccomandazioni utilizzando l'API OpenAI.
     """
     try:
-        # Debug: stampa i dati ricevuti
-        print("Dati ricevuti dal frontend:", request)
-
         # Prompt per il modello OpenAI
         prompt = f"""Sei un assistente esperto in raccomandazioni.
 L'utente cerca {request.categoria}. Le sue preferenze sono: {request.descrizione}.
 Genera un elenco di 5 raccomandazioni rilevanti con una breve spiegazione per ciascuna."""
 
-        # Debug: stampa il prompt
-        print("Prompt inviato a OpenAI:", prompt)
-
-        # Richiesta al modello GPT
+        # Richiesta al modello OpenAI
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Usa il modello desiderato
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Sei un assistente esperto in raccomandazioni personalizzate."},
                 {"role": "user", "content": prompt}
@@ -53,9 +52,6 @@ Genera un elenco di 5 raccomandazioni rilevanti con una breve spiegazione per ci
             max_tokens=500,
             temperature=0.7,
         )
-
-        # Debug: stampa la risposta grezza
-        print("Risposta grezza da OpenAI:", response)
 
         # Estrai la risposta generata
         raccomandazioni = response['choices'][0]['message']['content'].strip()
