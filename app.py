@@ -1,17 +1,18 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import openai
 import os
 
-# Ottieni la chiave API dalle variabili di ambiente
+# Configura la chiave API di OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Crea l'app FastAPI
 app = FastAPI()
 
-# Configura il middleware CORS per permettere le richieste dal frontend
+# Middleware CORS per permettere le richieste dal frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Permette richieste da qualsiasi origine
@@ -20,27 +21,36 @@ app.add_middleware(
     allow_headers=["*"],  # Permette tutti gli header HTTP
 )
 
+# Configura la cartella dei file statici (frontend)
+app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
+
 # Modello per i dati ricevuti dal frontend
 class RecommendationRequest(BaseModel):
-    categoria: str
-    descrizione: str
+    tipo: str  # Es. "film" o "serie tv"
+    genere: str  # Es. "azione", "commedia", ecc.
 
-# Endpoint di base per testare se il server è attivo
+# Endpoint per il messaggio di benvenuto
 @app.get("/")
-def root():
+def read_root():
     return {"message": "Benvenuto nell'API per le raccomandazioni dinamiche!"}
 
 # Endpoint per generare raccomandazioni
-@app.post("/raccomanda")
-def raccomanda(request: RecommendationRequest):
+@app.post("/recommendations")
+def generate_recommendations(request: RecommendationRequest):
     """
-    Riceve la categoria e la descrizione, genera raccomandazioni utilizzando l'API OpenAI.
+    Riceve il tipo e il genere, genera raccomandazioni utilizzando l'API OpenAI.
     """
     try:
-        # Prompt per il modello OpenAI
-        prompt = f"""Sei un assistente esperto in raccomandazioni.
-L'utente cerca {request.categoria}. Le sue preferenze sono: {request.descrizione}.
-Genera un elenco di 5 raccomandazioni rilevanti con una breve spiegazione per ciascuna."""
+        # Debug: stampa i dati ricevuti
+        print("Dati ricevuti:", request)
+
+        # Crea il prompt per il modello OpenAI
+        prompt = f"""Sei un assistente esperto in raccomandazioni personalizzate.
+L'utente sta cercando {request.tipo} di genere {request.genere}.
+Genera un elenco di 5 raccomandazioni rilevanti, con una breve spiegazione per ciascuna."""
+
+        # Debug: stampa il prompt
+        print("Prompt inviato a OpenAI:", prompt)
 
         # Richiesta al modello OpenAI
         response = openai.ChatCompletion.create(
@@ -53,9 +63,12 @@ Genera un elenco di 5 raccomandazioni rilevanti con una breve spiegazione per ci
             temperature=0.7,
         )
 
+        # Debug: stampa la risposta grezza
+        print("Risposta grezza da OpenAI:", response)
+
         # Estrai la risposta generata
-        raccomandazioni = response['choices'][0]['message']['content'].strip()
-        return {"raccomandazioni": raccomandazioni}
+        recommendations = response['choices'][0]['message']['content'].strip()
+        return {"recommendations": recommendations}
 
     except openai.error.AuthenticationError as e:
         print("Errore di autenticazione con OpenAI:", e)
