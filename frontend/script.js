@@ -8,7 +8,7 @@ document.getElementById("recommendationForm").addEventListener("submit", async f
     document.getElementById("risultato").textContent = "Caricamento...";
 
     try {
-        const response = await fetch("https://fastapi-project-m05f.onrender.com/raccomanda", {
+        const response = await fetch("https://fastapi-project-m05f.onrender.com/recommendations", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
