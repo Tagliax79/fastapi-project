@@ -35,7 +35,7 @@ def read_root():
     return {"message": "Benvenuto nell'API per le raccomandazioni dinamiche!"}
 
 # Endpoint per generare raccomandazioni
-@app.post("/raccomanda")
+@app.post("/recommendations")
 def generate_recommendations(request: RecommendationRequest):
     """
     Riceve il tipo e il genere, genera raccomandazioni utilizzando l'API OpenAI.
