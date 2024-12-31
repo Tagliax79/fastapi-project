@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raccomandazioni</title>
+    <title>Generatore di Raccomandazioni</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Generatore di Raccomandazioni</h1>
-        <form id="raccomandaForm">
+        <form id="recommendationForm">
             <label for="categoria">Categoria:</label>
-            <input type="text" id="categoria" placeholder="Es. Film" required>
-            
+            <input type="text" id="categoria" name="categoria" placeholder="Es. Film" required />
+
             <label for="descrizione">Descrizione:</label>
-            <textarea id="descrizione" placeholder="Es. Azione con protagonisti carismatici..." required></textarea>
-            
+            <textarea id="descrizione" name="descrizione" placeholder="Es. Azione con protagonisti carismatici..." required></textarea>
+
             <button type="submit">Genera Raccomandazioni</button>
         </form>
 
-        <div id="risultati">
-            <!-- Risultati appariranno qui -->
-        </div>
+        <p id="risultato"></p>
     </div>
     <script src="script.js"></script>
 </body>

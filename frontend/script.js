@@ -1,38 +1,32 @@
-document.getElementById('raccomandaForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita il refresh della pagina
+document.getElementById("recommendationForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Impedisce il comportamento predefinito del form (ricaricamento della pagina)
 
-    // Ottieni i valori dei campi
-    const categoria = document.getElementById('categoria').value;
-    const descrizione = document.getElementById('descrizione').value;
+    const categoria = document.getElementById("categoria").value;
+    const descrizione = document.getElementById("descrizione").value;
 
-    // URL del backend FastAPI
-   const url = 'https://tuo-progetto.onrender.com/raccomanda'; // Modifica dopo il deployment
-
-    // Prepara i dati per la richiesta
-    const dati = {
-        categoria: categoria,
-        descrizione: descrizione
-    };
+    // Reset del campo risultato
+    document.getElementById("risultato").textContent = "Caricamento...";
 
     try {
-        // Invia la richiesta al backend
-        const response = await fetch(url, {
-            method: 'POST',
+        const response = await fetch("https://fastapi-project-m05f.onrender.com/recommendations", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(dati),
+            body: JSON.stringify({
+                tipo: categoria,
+                genere: descrizione,
+            }),
         });
 
-        // Gestisci la risposta
         if (response.ok) {
-            const json = await response.json();
-            document.getElementById('risultati').innerText = json.raccomandazioni;
+            const data = await response.json();
+            document.getElementById("risultato").textContent = data.recommendations || "Nessuna raccomandazione trovata.";
         } else {
-            document.getElementById('risultati').innerText = `Errore: ${response.status}`;
+            document.getElementById("risultato").textContent = "Errore durante la connessione al server.";
         }
     } catch (error) {
-        console.error('Errore:', error);
-        document.getElementById('risultati').innerText = 'Errore durante la connessione al server.';
+        console.error("Errore:", error);
+        document.getElementById("risultato").textContent = "Errore durante la connessione al server.";
     }
 });
