@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import openai
 import os
@@ -81,3 +82,13 @@ Genera un elenco di 5 raccomandazioni rilevanti, con una breve spiegazione per c
     except Exception as e:
         print("Errore sconosciuto:", e)
         raise HTTPException(status_code=500, detail=f"Errore interno del server: {e}")
+
+# Endpoint per servire index.html sulla root "/"
+@app.get("/", response_class=HTMLResponse)
+async def serve_index():
+    try:
+        with open("frontend/index.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        print("Errore nel servire index.html:", e)
+        raise HTTPException(status_code=500, detail="Errore nel servire la pagina principale.")
