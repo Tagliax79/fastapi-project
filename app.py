@@ -21,8 +21,8 @@ app.add_middleware(
     allow_headers=["*"],  # Permette tutti gli header HTTP
 )
 
-# Configura la cartella dei file statici (frontend)
-app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
+# Monta StaticFiles su /static
+app.mount("/static", StaticFiles(directory="frontend", html=True), name="static")
 
 # Modello per i dati ricevuti dal frontend
 class RecommendationRequest(BaseModel):
@@ -30,12 +30,12 @@ class RecommendationRequest(BaseModel):
     genere: str  # Es. "azione", "commedia", ecc.
 
 # Endpoint per il messaggio di benvenuto
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"message": "Benvenuto nell'API per le raccomandazioni dinamiche!"}
 
 # Endpoint per generare raccomandazioni
-@app.post("/recommendations")
+@app.post("/api/recommendations")
 def generate_recommendations(request: RecommendationRequest):
     """
     Riceve il tipo e il genere, genera raccomandazioni utilizzando l'API OpenAI.
