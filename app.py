@@ -27,8 +27,8 @@ app.mount("/static", StaticFiles(directory="frontend", html=True), name="static"
 
 # Modello per i dati ricevuti dal frontend
 class RecommendationRequest(BaseModel):
-    tipo: str  # Es. "film" o "serie tv"
-    genere: str  # Es. "azione", "commedia", ecc.
+    tipo: str  # Es. "risultati" o "calciomercato"
+    genere: str  # Es. "Campionato", "Championms League", ecc.
 
 # Endpoint per il messaggio di benvenuto
 @app.get("/api")
@@ -46,9 +46,9 @@ def generate_recommendations(request: RecommendationRequest):
         print("Dati ricevuti:", request)
 
         # Crea il prompt per il modello OpenAI
-        prompt = f"""Sei un assistente esperto in raccomandazioni personalizzate.
+        prompt = f"""Sei un assistente esperto in ricerca notizie sull'AC Milan.
 L'utente sta cercando {request.tipo} di genere {request.genere}.
-Genera un elenco di 5 raccomandazioni rilevanti, con una breve spiegazione per ciascuna."""
+Genera un elenco di 6 notizie rilevanti, cercando solo sul sito di www.milannews.it e www.acmilan.com. Quando rispondi inserisci il link della singola notizia trovata. Cerca sempre notizie relative alla giornata odierna"""
 
         # Debug: stampa il prompt
         print("Prompt inviato a OpenAI:", prompt)
@@ -57,7 +57,7 @@ Genera un elenco di 5 raccomandazioni rilevanti, con una breve spiegazione per c
         response = openai.ChatCompletion.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "Sei un assistente esperto in raccomandazioni personalizzate."},
+                {"role": "system", "content": "Sei un assistente esperto in ricerca notizie sull'AC Milan."},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=500,
