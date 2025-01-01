@@ -55,7 +55,7 @@ Genera un elenco di 5 raccomandazioni rilevanti, con una breve spiegazione per c
 
         # Richiesta al modello OpenAI
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Sei un assistente esperto in raccomandazioni personalizzate."},
                 {"role": "user", "content": prompt}
